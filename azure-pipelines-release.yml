@@ -1,7 +1,8 @@
 trigger: none
 pr: none
 
-pool: NetCorePublic-Pool
+pool: 
+  name: 'NetCorePublic-Pool'
 
 steps:
 
