@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- Build Settings -->
+    <DebugType Condition="'$(Configuration)'=='Release'">pdbonly</DebugType>
+    <DebugSymbols>True</DebugSymbols>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <LangVersion>8.0</LangVersion>
+    <!-- See https://github.com/Azure/durabletask/issues/428 -->
+    <NoWarn>NU5125,NU5048</NoWarn>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <!-- SourceLink Settings-->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>embedded</DebugType>
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+	
+  <!-- SourceLink Dependency for GitHub-->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.*" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- Nuget Package Settings -->
+  <PropertyGroup>
+    <PackageOutputPath>..\..\build_output\packages</PackageOutputPath>
+    <AssemblyVersion>1.0.0</AssemblyVersion>
+    <FileVersion>1.0.0</FileVersion>
+    <Version>1.0.0</Version>
+    <Company>Microsoft</Company>
+    <Authors>Microsoft</Authors>
+    <Product>Durable Task Framework</Product>
+    <Description>This package provides a C# based durable task framework for writing long running applications.</Description>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <Copyright>© Microsoft Corporation. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/taidevops/durabletask/</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/taidevops/durabletask/</RepositoryUrl>
+    <PackageIconUrl>https://github.com/taidevops/durabletask/blob/main/logo.png?raw=true</PackageIconUrl>
+    <PackageTags>ServiceBus Azure Task Durable Orchestration Workflow Activity Reliable</PackageTags>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <IncludeSymbols>true</IncludeSymbols>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+	
+</Project>

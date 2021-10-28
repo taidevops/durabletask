@@ -1,0 +1,24 @@
+trigger: none
+pr: none
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+
+- task: DotNetCoreCLI@2
+  displayName: 'Restore nuget dependencies'
+  inputs:
+    command: restore
+    verbosityRestore: Minimal
+    projects: 'DurableTask.sln'
+
+# Build the filtered solution in release mode, specifying the continuous integration flag.
+- task: VSBuild@1
+  displayName: 'Build'
+  inputs:
+    solution: 'DurableTask.sln'
+    vsVersion: '16.0'
+    logFileVerbosity: minimal
+    configuration: Release
+    msbuildArgs: /p:GITHUB_RUN_NUMBER=$(Build.BuildId) /p:ContinuousIntegrationBuild=true
