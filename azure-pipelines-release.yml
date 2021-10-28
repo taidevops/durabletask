@@ -5,5 +5,12 @@ pool:
   name: 'NetCorePublic-Pool'
 
 steps:
-
-- script: echo hello from Windows
+# Start by restoring all the dependencies. This needs to be its own task
+# from what I can tell. We specifically only target DurableTask.AzureStorage
+# and its direct dependencies.
+- task: DotNetCoreCLI@2
+  displayName: 'Restore nuget dependencies'
+  inputs:
+    command: restore
+    verbosityRestore: Minimal
+    projects: 'DurableTask.sln'
