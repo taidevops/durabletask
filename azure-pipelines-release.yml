@@ -1,8 +1,7 @@
 trigger: none
 pr: none
 
-pool:
-  vmImage: 'windows-latest'
+pool: NetCorePublic-Pool
 
 steps:
 
