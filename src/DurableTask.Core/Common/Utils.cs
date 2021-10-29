@@ -28,6 +28,23 @@ namespace DurableTask.Core.Common
     /// </summary>
     public static class Utils
     {
+        /// <summary>
+        /// Gets the version of the DurableTask.Core nuget package, which by convension is the same as the assembly file version.
+        /// </summary>
+        internal static readonly string PackageVersion = FileVersionInfo.GetVersionInfo(typeof(TaskOrchestration).Assembly.Location).FileVersion;
+
+        /// <summary>
+        /// Gets or sets the name of the app, for use when writing structured event source traces.
+        /// </summary>
+        /// <remarks>
+        /// The default value comes from the WEBSITE_SITE_NAME environment variable, which is defined
+        /// in Azure App Service. Other environments can use DTFX_APP_NAME to set this value.
+        /// </remarks>
+        public static string AppName { get; set; } =
+            Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ??
+            Environment.GetEnvironmentVariable("DTFX_APP_NAME") ??
+            string.Empty;
+
         internal static JArray ConvertToJArray(string input)
         {
             JArray jArray;

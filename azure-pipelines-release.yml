@@ -20,7 +20,7 @@ steps:
   displayName: 'Build'
   inputs:
     solution: 'DurableTask.sln'
-    vsVersion: '16.0'
+    vsVersion: 'latest'
     logFileVerbosity: minimal
     configuration: Release
     msbuildArgs: /p:GITHUB_RUN_NUMBER=$(Build.BuildId) /p:ContinuousIntegrationBuild=true
