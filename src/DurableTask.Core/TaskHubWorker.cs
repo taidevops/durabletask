@@ -39,7 +39,7 @@ namespace DurableTask.Core
         // ReSharper disable once InconsistentNaming (avoid breaking change)
         public IOrchestrationService orchestrationService { get; }
 
-        volatile bool isStarted;
+        //volatile bool isStarted;
 
         /// <summary>
         ///     Create a new <see cref="TaskHubWorker"/> with given <see cref="IOrchestrationService"/> and name version managers
