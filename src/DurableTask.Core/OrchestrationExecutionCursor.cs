@@ -14,7 +14,6 @@
 namespace DurableTask.Core
 {
     using System.Collections.Generic;
-    using DurableTask.Core.Command;
 
     internal class OrchestrationExecutionCursor
     {
@@ -22,7 +21,5 @@ namespace DurableTask.Core
         {
 
         }
-
-        public OrchestrationRuntimeState
     }
 }

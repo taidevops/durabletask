@@ -26,6 +26,9 @@ namespace DurableTask.Core
     /// </summary>
     public abstract class TraceContextBase
     {
+        /// <summary>
+        /// 
+        /// </summary>
         protected TraceContextBase()
         {
 
@@ -40,8 +43,6 @@ namespace DurableTask.Core
         /// Start time of this telemetry
         /// </summary>
         public DateTimeOffset StartTime { get; set; }
-
-        public
     }
 
     /// <summary>

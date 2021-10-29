@@ -24,3 +24,20 @@ steps:
     logFileVerbosity: minimal
     configuration: Release
     msbuildArgs: /p:GITHUB_RUN_NUMBER=$(Build.BuildId) /p:ContinuousIntegrationBuild=true
+
+# Packaging needs to be a separate step from build.
+# This will automatically pick up the signed DLLs.
+- task: DotNetCoreCLI@2
+  displayName: Generate nuget packages
+  inputs:
+    command: pack
+    verbosityPack: Minimal
+    configuration: Release
+    nobuild: true
+    packDirectory: $(build.artifactStagingDirectory)
+    packagesToPack: 'DurableTask.sln'
+
+# Make the nuget packages available for download in the ADO portal UI
+- publish: $(build.artifactStagingDirectory)
+  displayName: 'Publish nuget packages to Artifacts'
+  artifact: PackageOutput
