@@ -19,7 +19,6 @@ namespace DurableTask.Core
     using System.Threading;
     using System.Threading.Tasks;
     using DurableTask.Core.Logging;
-    using DurableTask.Core.Middleware;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
