@@ -37,6 +37,13 @@ steps:
     packDirectory: $(build.artifactStagingDirectory)
     packagesToPack: 'DurableTask.sln'
 
+# Push non test NuGet packages from a build to internal organization Feed
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'push'
+    searchPatternPush: '$(build.ArtifactStagingDirectory)/*.nupkg;!$(Build.ArtifactStagingDirectory)/*.Tests.nupkg'
+    feedPublish: 'dotnet-eng'
+
 # Make the nuget packages available for download in the ADO portal UI
 - publish: $(build.artifactStagingDirectory)
   displayName: 'Publish nuget packages to Artifacts'
