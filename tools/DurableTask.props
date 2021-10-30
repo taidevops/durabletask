@@ -22,6 +22,13 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.*" PrivateAssets="All" />
   </ItemGroup>
 
+  <!-- Test Specific Settings -->
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('.Tests')) Or $(MSBuildProjectName.Contains('.Test.')) Or $(MSBuildProjectName.EndsWith('.Samples'))">
+    <SignAssembly>false</SignAssembly>
+    <RunCodeAnalysis>False</RunCodeAnalysis>
+    <GenerateDocumentationFile>False</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <!-- Nuget Package Settings -->
   <PropertyGroup>
     <PackageOutputPath>..\..\build_output\packages</PackageOutputPath>

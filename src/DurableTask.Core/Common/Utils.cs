@@ -18,8 +18,10 @@ namespace DurableTask.Core.Common
     using System.IO;
     using System.IO.Compression;
     using System.Runtime.ExceptionServices;
+    using System.Threading.Tasks;
     using DurableTask.Core.Exceptions;
     using DurableTask.Core.Serializing;
+    using DurableTask.Core.Tracing;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -103,6 +105,86 @@ namespace DurableTask.Core.Common
             }
 
             return details;
+        }
+
+        /// <summary>
+        /// Executes the supplied action until successful or the supplied number of attempts is reached
+        /// </summary>
+        public static async Task ExecuteWithRetries(Func<Task> retryAction, string sessionId, string operation,
+            int numberOfAttempts, int delayInAttemptsSecs)
+        {
+            if (numberOfAttempts == 0)
+            {
+                // No attempts are requested to execute the action
+                return;
+            }
+
+            int retryCount = numberOfAttempts;
+            ExceptionDispatchInfo lastException = null;
+            while (retryCount-- > 0)
+            {
+                try
+                {
+                    await retryAction();
+                    return;
+                }
+                catch (Exception exception) when (!IsFatal(exception))
+                {
+                    TraceHelper.TraceSession(
+                        TraceEventType.Warning,
+                        "ExecuteWithRetry-Failure",
+                        sessionId,
+                        $"Error attempting operation {operation}. Attempt count: {numberOfAttempts - retryCount}. Exception: {exception.Message}\n\t{exception.StackTrace}");
+                    lastException = ExceptionDispatchInfo.Capture(exception);
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(delayInAttemptsSecs));
+            }
+
+            TraceHelper.Trace(TraceEventType.Error, "ExecuteWithRetry-RetriesExhausted", "Exhausted all retries for operation " + operation);
+            TraceHelper.TraceExceptionSession(TraceEventType.Error, "ExecuteWithRetryRetriesExhausted", sessionId, lastException).Throw();
+        }
+
+        /// <summary>
+        /// Executes the supplied action until successful or the supplied number of attempts is reached
+        /// </summary>
+        public static async Task<T> ExecuteWithRetries<T>(Func<Task<T>> retryAction, string sessionId, string operation,
+            int numberOfAttempts, int delayInAttemptsSecs)
+        {
+            if (numberOfAttempts == 0)
+            {
+                // No attempts are requested to execute the action
+                return default(T);
+            }
+
+            int retryCount = numberOfAttempts;
+            ExceptionDispatchInfo lastException = null;
+            while (retryCount-- > 0)
+            {
+                try
+                {
+                    return await retryAction();
+                }
+                catch (Exception exception) when (!IsFatal(exception))
+                {
+                    TraceHelper.TraceSession(
+                        TraceEventType.Warning,
+                        $"ExecuteWithRetry<{typeof(T)}>-Failure",
+                        sessionId,
+                        $"Error attempting operation {operation}. Attempt count: {numberOfAttempts - retryCount}. Exception: {exception.Message}\n\t{exception.StackTrace}");
+                    lastException = ExceptionDispatchInfo.Capture(exception);
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(delayInAttemptsSecs));
+            }
+
+            string eventType = $"ExecuteWithRetry<{typeof(T)}>-Failure";
+            TraceHelper.Trace(TraceEventType.Error, eventType, "Exhausted all retries for operation " + operation);
+
+            TraceHelper.TraceExceptionSession(TraceEventType.Error, eventType, sessionId, lastException).Throw();
+
+            // This is a noop code since TraceExceptionSession above will rethrow the cached exception however the compiler doesn't see it
+            return default(T);
         }
     }
 }
