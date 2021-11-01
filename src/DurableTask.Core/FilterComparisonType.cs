@@ -11,16 +11,21 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core.Logging
+namespace DurableTask.Core
 {
-    // WARNING: Changing the *name* OR the *value* of any of these constants is a breaking change!!
-    static class EventIds
+    /// <summary>
+    /// The kind of comparison to be performed in the State Filter.
+    /// </summary>
+    public enum FilterComparisonType
     {
-        public const int TaskHubWorkerStarting = 10;
-        public const int TaskHubWorkerStarted = 11;
+        /// <summary>
+        /// Equality Comparison
+        /// </summary>
+        Equals = 0,
 
-        public const int DispatcherStarting = 20;
-        public const int DispatcherStopped = 21;
-        public const int ProcessWorkItemFailed = 29;
+        /// <summary>
+        /// In-Equality Comparison
+        /// </summary>
+        NotEquals = 1
     }
 }

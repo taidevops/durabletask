@@ -11,16 +11,31 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core.Logging
+namespace DurableTask.Core.Common
 {
-    // WARNING: Changing the *name* OR the *value* of any of these constants is a breaking change!!
-    static class EventIds
+    /// <summary>
+    /// Compression style
+    /// </summary>
+    public enum CompressionStyle
     {
-        public const int TaskHubWorkerStarting = 10;
-        public const int TaskHubWorkerStarted = 11;
+        /// <summary>
+        ///     Revert to pre-message compression behavior (not recommended)
+        /// </summary>
+        Legacy = 0,
 
-        public const int DispatcherStarting = 20;
-        public const int DispatcherStopped = 21;
-        public const int ProcessWorkItemFailed = 29;
+        /// <summary>
+        ///     Never compress messages
+        /// </summary>
+        Never,
+
+        /// <summary>
+        ///     Always compress messages
+        /// </summary>
+        Always,
+
+        /// <summary>
+        ///     Only compress messages if they are above the threshold
+        /// </summary>
+        Threshold,
     }
 }

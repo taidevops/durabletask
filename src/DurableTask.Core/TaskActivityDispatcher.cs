@@ -11,16 +11,26 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core.Logging
+namespace DurableTask.Core
 {
-    // WARNING: Changing the *name* OR the *value* of any of these constants is a breaking change!!
-    static class EventIds
-    {
-        public const int TaskHubWorkerStarting = 10;
-        public const int TaskHubWorkerStarted = 11;
+    using System;
+    using System.Diagnostics;
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using DurableTask.Core.Common;
+    using DurableTask.Core.Exceptions;
+    using DurableTask.Core.History;
+    using DurableTask.Core.Logging;
+    using DurableTask.Core.Middleware;
+    using DurableTask.Core.Tracing;
 
-        public const int DispatcherStarting = 20;
-        public const int DispatcherStopped = 21;
-        public const int ProcessWorkItemFailed = 29;
+    /// <summary>
+    /// Dispatcher for task activities to handle processing and renewing of work items
+    /// </summary>
+    public sealed class TaskActivityDispatcher
+    {
+        readonly INameVersionObjectManager<TaskActivity> objectManager;
+        readonly 
     }
 }

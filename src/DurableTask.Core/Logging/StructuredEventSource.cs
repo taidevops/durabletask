@@ -56,5 +56,34 @@ namespace DurableTask.Core.Logging
                 this.WriteEvent(EventIds.TaskHubWorkerStarting, AppName, ExtensionVersion);
             }
         }
+
+        [Event(EventIds.DispatcherStarting, Level = EventLevel.Verbose, Version = 1)]
+        internal void DispatcherStarting(string Dispatcher, string AppName, string ExtensionVersion)
+        {
+            if (this.IsEnabled(EventLevel.Verbose))
+            {
+                this.WriteEvent(EventIds.DispatcherStarting, Dispatcher, AppName, ExtensionVersion);
+            }
+        }
+
+        [Event(EventIds.ProcessWorkItemFailed, Level = EventLevel.Error, Version = 1)]
+        internal void ProcessWorkItemFailed(
+            string Dispatcher,
+            string WorkItemId,
+            string Details,
+            string AppName,
+            string ExtensionVersion)
+        {
+            if (this.IsEnabled(EventLevel.Error))
+            {
+                this.WriteEvent(
+                    EventIds.ProcessWorkItemFailed,
+                    Dispatcher,
+                    WorkItemId,
+                    Details,
+                    AppName,
+                    ExtensionVersion);
+            }
+        }
     }
 }

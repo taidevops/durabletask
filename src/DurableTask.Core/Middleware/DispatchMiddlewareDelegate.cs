@@ -11,16 +11,14 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core.Logging
+namespace DurableTask.Core.Middleware
 {
-    // WARNING: Changing the *name* OR the *value* of any of these constants is a breaking change!!
-    static class EventIds
-    {
-        public const int TaskHubWorkerStarting = 10;
-        public const int TaskHubWorkerStarted = 11;
+    using System.Threading.Tasks;
 
-        public const int DispatcherStarting = 20;
-        public const int DispatcherStopped = 21;
-        public const int ProcessWorkItemFailed = 29;
-    }
+    /// <summary>
+    /// A function that runs in the task execution middleware pipeline.
+    /// </summary>
+    /// <param name="context">The <see cref="DispatchMiddlewareContext"/> for the task execution.</param>
+    /// <returns>A task that represents the completion of the durable task execution.</returns>
+    public delegate Task DispatchMiddlewareDelegate(DispatchMiddlewareContext context);
 }

@@ -42,6 +42,39 @@ namespace DurableTask.Core.Logging
         }
         #endregion
 
+        #region WorkItemDispatcher traces
+
+        internal void DispatcherStarting(WorkItemDispatcherContext context)
+        {
+            if (this.IsStructuredLoggingEnabled)
+            {
+                this.WriteStructuredLog(new LogEvents.Dos)
+            }
+        }
+
+        /// <summary>
+        /// Logs that a work item was processed successfully.
+        /// This event does not have enough context to understand the details of the work item.
+        /// </summary>
+        /// <param name="context">The dispatcher context.</param>
+        /// <param name="workItemId">The ID of the work item.</param>
+        /// <param name="additionalInfo">Additional information associated with the failure.</param>
+        /// <param name="exception">The exception associated with the failure.</param>
+        internal void ProcessWorkItemFailed(
+            WorkItemDispatcherContext context,
+            string workItemId,
+            string additionalInfo,
+            Exception exception)
+        {
+            if (this.IsStructuredLoggingEnabled)
+            {
+                this.WriteStructuredLog(
+                    new LogEvents.ProcessWorkItemFailed(context, workItemId, additionalInfo, exception),
+                    exception);
+            }
+        }
+        #endregion
+
         void WriteStructuredLog(ILogEvent logEvent, Exception exception = null)
         {
             this.log?.LogDurableEvent(logEvent, exception);

@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="DurableTask.Core.History.HistoryEvent" Collapsed="true">
+    <Position X="5.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAABAgAAAQAAAAAAACAAAEAAAAAAAEAAAAAAAAABA=</HashCode>
+      <FileName>History\HistoryEvent.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="EventType" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="DurableTask.Core.History.ExecutionStartedEvent" Collapsed="true">
+    <Position X="2.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IACAAAAAAAAAAAAAAAAEABQEECAAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\ExecutionStartedEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.ExecutionCompletedEvent" Collapsed="true">
+    <Position X="2.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQEAAAQAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\ExecutionCompletedEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.ExecutionTerminatedEvent" Collapsed="true">
+    <Position X="2.75" Y="4" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\ExecutionTerminatedEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.TimerFiredEvent" Collapsed="true">
+    <Position X="5.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAACAAAAAAAAAAQ=</HashCode>
+      <FileName>History\TimerFiredEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.ContinueAsNewEvent" Collapsed="true">
+    <Position X="0.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\ContinueAsNewEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.EventRaisedEvent" Collapsed="true">
+    <Position X="7.75" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQEEAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\EventRaisedEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DurableTask.Core.History.GenericEvent" Collapsed="true">
+    <Position X="7.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAEAAAAABAAAAAAAAAAAAA=</HashCode>
+      <FileName>History\GenericEvent.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="DurableTask.Core.History.EventType" Collapsed="true">
+    <Position X="5.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAABgRAAAAACAAIAIAgIIBBIAAAAAABEAAAAABAAAE=</HashCode>
+      <FileName>History\EventType.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

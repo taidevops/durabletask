@@ -19,6 +19,7 @@ namespace DurableTask.Core
     using System.Threading;
     using System.Threading.Tasks;
     using DurableTask.Core.Logging;
+    using DurableTask.Core.Middleware;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -30,6 +31,9 @@ namespace DurableTask.Core
         readonly INameVersionObjectManager<TaskActivity> activityManager;
         readonly INameVersionObjectManager<TaskOrchestration> orchestrationManager;
 
+        readonly DispatchMiddlewarePipeline orchestrationDispatchPipeline = new DispatchMiddlewarePipeline();
+        readonly DispatchMiddlewarePipeline activityDispatchPipeline = new DispatchMiddlewarePipeline();
+
         readonly SemaphoreSlim slimLock = new SemaphoreSlim(1, 1);
         readonly LogHelper logHelper;
 
@@ -39,7 +43,9 @@ namespace DurableTask.Core
         // ReSharper disable once InconsistentNaming (avoid breaking change)
         public IOrchestrationService orchestrationService { get; }
 
-        //volatile bool isStarted;
+        volatile bool isStarted;
+
+
 
         /// <summary>
         ///     Create a new <see cref="TaskHubWorker"/> with given <see cref="IOrchestrationService"/> and name version managers
