@@ -48,7 +48,7 @@ namespace DurableTask.Core
             if (parentTraceContext is HttpCorrelationProtocolTraceContext)
             {
                 var context = (HttpCorrelationProtocolTraceContext)parentTraceContext;
-                CurrentActivity.SetParentId(context.ParentId); // TODO check if it is context.ParentId or context.CurrentActivity.Id 
+                 CurrentActivity.SetParentId(context.ParentId); // TODO check if it is context.ParentId or context.CurrentActivity.Id 
                 OrchestrationTraceContexts = context.OrchestrationTraceContexts.Clone();
             }
 
@@ -88,6 +88,6 @@ namespace DurableTask.Core
         public override string TelemetryContextOperationParentId => CurrentActivity?.ParentId ?? ParentParentId;
 
         // internal use. Make it internal for testability.
-        internal string GetRootId(string id) => id?.Split('.').FirstOrDefault()?.Replace("|", "");
+        internal string GetRootId(string id) =>  id?.Split('.').FirstOrDefault()?.Replace("|", "");        
     }
 }

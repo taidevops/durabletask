@@ -59,5 +59,55 @@ namespace DurableTask.Core
         /// </summary>
         /// <param name="entities">List of history events to delete</param>
         Task<object> DeleteEntitiesAsync(IEnumerable<InstanceEntityBase> entities);
+
+        /// <summary>
+        /// Gets a list of orchestration states for a given instance
+        /// </summary>
+        /// <param name="instanceId">The instance id to return state for</param>
+        /// <param name="allInstances">Flag indication whether to get all history execution ids or just the most recent</param>
+        /// <returns>List of matching orchestration states</returns>
+        Task<IEnumerable<OrchestrationStateInstanceEntity>> GetOrchestrationStateAsync(string instanceId, bool allInstances);
+
+        /// <summary>
+        /// Gets the orchestration state for a given instance and execution id
+        /// </summary>
+        /// <param name="instanceId">The instance id to return state for</param>
+        /// <param name="executionId">The execution id to return state for</param>
+        /// <returns>The matching orchestration state or null if not found</returns>
+        Task<OrchestrationStateInstanceEntity> GetOrchestrationStateAsync(string instanceId, string executionId);
+
+        /// <summary>
+        /// Gets the list of history events for a given instance and execution id
+        /// </summary>
+        /// <param name="instanceId">The instance id to return history for</param>
+        /// <param name="executionId">The execution id to return history for</param>
+        /// <returns>List of history events</returns>
+        Task<IEnumerable<OrchestrationWorkItemInstanceEntity>> GetOrchestrationHistoryEventsAsync(string instanceId, string executionId);
+
+        /// <summary>
+        /// Purges history from storage for given time range
+        /// </summary>
+        /// <param name="thresholdDateTimeUtc">The datetime in UTC to use as the threshold for purging history</param>
+        /// <param name="timeRangeFilterType">What to compare the threshold date time against</param>
+        /// <returns>The number of history events purged.</returns>
+        Task<int> PurgeOrchestrationHistoryEventsAsync(DateTime thresholdDateTimeUtc, OrchestrationStateTimeRangeFilterType timeRangeFilterType);
+
+        /// <summary>
+        /// Writes a list of jump start events to instance store
+        /// </summary>
+        /// <param name="entities">List of jump start events to write</param>
+        Task<object> WriteJumpStartEntitiesAsync(IEnumerable<OrchestrationJumpStartInstanceEntity> entities);
+
+        /// <summary>
+        /// Deletes a list of jump start events from instance store
+        /// </summary>
+        /// <param name="entities">List of jump start events to delete</param>
+        Task<object> DeleteJumpStartEntitiesAsync(IEnumerable<OrchestrationJumpStartInstanceEntity> entities);
+
+        /// <summary>
+        /// Get a list of jump start events from instance store
+        /// </summary>
+        /// <returns>List of jump start events</returns>
+        Task<IEnumerable<OrchestrationJumpStartInstanceEntity>> GetJumpStartEntitiesAsync(int top);
     }
 }

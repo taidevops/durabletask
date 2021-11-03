@@ -112,7 +112,7 @@ namespace DurableTask.Core
                 throw new TaskFailureException(
                     "TaskActivity implementation cannot be invoked due to more than expected input parameters.  Signature mismatch.");
             }
-
+            
             if (parameterCount == 1)
             {
                 JToken jToken = jArray[0];

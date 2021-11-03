@@ -120,7 +120,7 @@ namespace DurableTask.Core
         /// <returns></returns>
         public OrchestrationState ClearFieldsImmutably(bool clearInput, bool clearOutput)
         {
-            if (!(clearInput || clearOutput))
+            if (! (clearInput || clearOutput))
             {
                 return this;
             }

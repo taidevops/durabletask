@@ -41,8 +41,8 @@ namespace DurableTask.Core
         /// <param name="trackDependencyTelemetryAction">Action to send telemetry for <see cref="Activity"/></param>
         /// <param name="trackExceptionAction">Action to send telemetry for exception </param>
         public static void SetUp(
-            Action<TraceContextBase> trackRequestTelemetryAction,
-            Action<TraceContextBase> trackDependencyTelemetryAction,
+            Action<TraceContextBase> trackRequestTelemetryAction, 
+            Action<TraceContextBase> trackDependencyTelemetryAction, 
             Action<Exception> trackExceptionAction)
         {
             listenerSubscription = DiagnosticListener.AllListeners.Subscribe(
@@ -125,7 +125,7 @@ namespace DurableTask.Core
             if (CorrelationSettings.Current.EnableDistributedTracing)
             {
                 return func();
-            }
+            } 
             else
             {
                 return Task.CompletedTask;

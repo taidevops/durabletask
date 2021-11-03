@@ -19,7 +19,6 @@ namespace DurableTask.Core
     using DurableTask.Core.Common;
     using DurableTask.Core.History;
     using DurableTask.Core.Tracing;
-    using DurableTask.Core.Tracking;
 
     /// <summary>
     /// Represents the runtime state of an orchestration
@@ -95,9 +94,106 @@ namespace DurableTask.Core
         }
 
         /// <summary>
+        /// Gets the created time of the ExecutionStartedEvent
+        /// </summary>
+        public DateTime CreatedTime
+        {
+            get
+            {
+                Debug.Assert(ExecutionStartedEvent != null);
+                return ExecutionStartedEvent.Timestamp;
+            }
+        }
+
+        /// <summary>
+        /// Gets the created time of the ExecutionCompletedEvent if completed else a safe (from timezone shift) max datetime
+        /// </summary>
+        public DateTime CompletedTime => ExecutionCompletedEvent?.Timestamp ?? Utils.DateTimeSafeMaxValue;
+
+        /// <summary>
+        /// Gets the serialized input of the ExecutionStartedEvent
+        /// </summary>
+        public string Input
+        {
+            get
+            {
+                Debug.Assert(ExecutionStartedEvent != null);
+                return ExecutionStartedEvent.Input;
+            }
+        }
+
+        /// <summary>
+        /// Gets the serialized output of the ExecutionCompletedEvent if completed else null
+        /// </summary>
+        public string Output => ExecutionCompletedEvent?.Result;
+
+        /// <summary>
+        /// Gets the orchestration name of the ExecutionStartedEvent
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                Debug.Assert(ExecutionStartedEvent != null);
+                return ExecutionStartedEvent.Name;
+            }
+        }
+
+        /// <summary>
+        /// Gets the orchestration version of the ExecutionStartedEvent
+        /// </summary>
+        public string Version
+        {
+            get
+            {
+                Debug.Assert(ExecutionStartedEvent != null);
+                return ExecutionStartedEvent.Version;
+            }
+        }
+
+        /// <summary>
+        /// Gets the tags from the ExecutionStartedEvent
+        /// </summary>
+        // This gets called by json.net for deserialization, we can't assert if there is no ExecutionStartedEvent
+        public IDictionary<string, string> Tags => ExecutionStartedEvent?.Tags;
+
+        /// <summary>
+        /// Gets the status of the orchestration
+        /// If complete then the status from the ExecutionCompletedEvent else Running.
+        /// </summary>
+        public OrchestrationStatus OrchestrationStatus
+        {
+            get
+            {
+                Debug.Assert(ExecutionStartedEvent != null);
+
+                if (ExecutionCompletedEvent != null)
+                {
+                    return ExecutionCompletedEvent.OrchestrationStatus;
+                }
+
+                return OrchestrationStatus.Running;
+            }
+        }
+
+        /// <summary>
         /// Gets the OrchestrationInstance of the ExecutionStartedEvent else null
         /// </summary>
         public OrchestrationInstance OrchestrationInstance => ExecutionStartedEvent?.OrchestrationInstance;
+
+        /// <summary>
+        /// Gets the ParentInstance of the ExecutionStartedEvent else null
+        /// </summary>
+        public ParentInstance ParentInstance => ExecutionStartedEvent?.ParentInstance;
+
+        /// <summary>
+        /// Adds a new history event to the Events list and NewEvents list
+        /// </summary>
+        /// <param name="historyEvent">The new history event to add</param>
+        public void AddEvent(HistoryEvent historyEvent)
+        {
+            AddEvent(historyEvent, true);
+        }
 
         /// <summary>
         /// Adds a new history event to the Events list and optionally NewEvents list
@@ -127,8 +223,8 @@ namespace DurableTask.Core
                 historyEvent.EventType == EventType.TaskCompleted &&
                 !completedEventIds.Add(historyEvent.EventId))
             {
-                TraceHelper.Trace(TraceEventType.Warning,
-                    "OrchestrationRuntimeState-DuplicateEvent",
+                TraceHelper.Trace(TraceEventType.Warning, 
+                    "OrchestrationRuntimeState-DuplicateEvent", 
                     "The orchestration {0} has already seen a completed task with id {1}.",
                     this.OrchestrationInstance.InstanceId,
                     historyEvent.EventId);
@@ -159,6 +255,134 @@ namespace DurableTask.Core
 
                 ExecutionCompletedEvent = completedEvent;
             }
+        }
+
+        /// <summary>
+        /// Gets a statedump of the current list of events.
+        /// </summary>
+        /// <returns></returns>
+        public OrchestrationRuntimeStateDump GetOrchestrationRuntimeStateDump()
+        {
+#if DEBUG
+            var runtimeStateDump = new OrchestrationRuntimeStateDump
+            {
+                Events = new List<HistoryEvent>(),
+                NewEvents = new List<HistoryEvent>(),
+            };
+
+            foreach (HistoryEvent evt in Events)
+            {
+                HistoryEvent abridgeEvent = GenerateAbridgedEvent(evt);
+                runtimeStateDump.Events.Add(abridgeEvent);
+            }
+
+            foreach (HistoryEvent evt in NewEvents)
+            {
+                HistoryEvent abridgeEvent = GenerateAbridgedEvent(evt);
+                runtimeStateDump.NewEvents.Add(abridgeEvent);
+            }
+
+            return runtimeStateDump;
+#else
+            return new OrchestrationRuntimeStateDump
+            {
+                EventCount = Events.Count,
+                NewEventsCount = NewEvents.Count,
+                Events = new List<HistoryEvent>(),
+                NewEvents = new List<HistoryEvent>(),
+            };
+#endif
+        }
+
+        HistoryEvent GenerateAbridgedEvent(HistoryEvent evt)
+        {
+            HistoryEvent returnedEvent = evt;
+
+            if (evt is TaskScheduledEvent taskScheduledEvent)
+            {
+                returnedEvent = new TaskScheduledEvent(taskScheduledEvent.EventId)
+                {
+                    Timestamp = taskScheduledEvent.Timestamp,
+                    IsPlayed = taskScheduledEvent.IsPlayed,
+                    Name = taskScheduledEvent.Name,
+                    Version = taskScheduledEvent.Version,
+                    Input = "[..snipped..]",
+                };
+            }
+            else if (evt is TaskCompletedEvent taskCompletedEvent)
+            {
+                returnedEvent = new TaskCompletedEvent(taskCompletedEvent.EventId, taskCompletedEvent.TaskScheduledId, "[..snipped..]")
+                {
+                    Timestamp = taskCompletedEvent.Timestamp,
+                    IsPlayed = taskCompletedEvent.IsPlayed,
+                };
+            }
+            else if (evt is SubOrchestrationInstanceCreatedEvent subOrchestrationInstanceCreatedEvent)
+            {
+                returnedEvent = new SubOrchestrationInstanceCreatedEvent(subOrchestrationInstanceCreatedEvent.EventId)
+                {
+                    Timestamp = subOrchestrationInstanceCreatedEvent.Timestamp,
+                    IsPlayed = subOrchestrationInstanceCreatedEvent.IsPlayed,
+                    Name = subOrchestrationInstanceCreatedEvent.Name,
+                    Version = subOrchestrationInstanceCreatedEvent.Version,
+                    Input = "[..snipped..]",
+                };
+            }
+            else if (evt is SubOrchestrationInstanceCompletedEvent subOrchestrationInstanceCompletedEvent)
+            {
+                returnedEvent = new SubOrchestrationInstanceCompletedEvent(subOrchestrationInstanceCompletedEvent.EventId,
+                    subOrchestrationInstanceCompletedEvent.TaskScheduledId, "[..snipped..]")
+                {
+                    Timestamp = subOrchestrationInstanceCompletedEvent.Timestamp,
+                    IsPlayed = subOrchestrationInstanceCompletedEvent.IsPlayed,
+                };
+            }
+            else if (evt is TaskFailedEvent taskFailedEvent)
+            {
+                returnedEvent = new TaskFailedEvent(taskFailedEvent.EventId,
+                    taskFailedEvent.TaskScheduledId, taskFailedEvent.Reason, "[..snipped..]")
+                {
+                    Timestamp = taskFailedEvent.Timestamp,
+                    IsPlayed = taskFailedEvent.IsPlayed,
+                };
+            }
+            else if (evt is SubOrchestrationInstanceFailedEvent subOrchestrationInstanceFailedEvent)
+            {
+                returnedEvent = new SubOrchestrationInstanceFailedEvent(subOrchestrationInstanceFailedEvent.EventId,
+                    subOrchestrationInstanceFailedEvent.TaskScheduledId, subOrchestrationInstanceFailedEvent.Reason, "[..snipped..]")
+                {
+                    Timestamp = subOrchestrationInstanceFailedEvent.Timestamp,
+                    IsPlayed = subOrchestrationInstanceFailedEvent.IsPlayed,
+                };
+            }
+            else if (evt is ExecutionStartedEvent executionStartedEvent)
+            {
+                returnedEvent = new ExecutionStartedEvent(executionStartedEvent.EventId, "[..snipped..]")
+                {
+                    Timestamp = executionStartedEvent.Timestamp,
+                    IsPlayed = executionStartedEvent.IsPlayed,
+                };
+            }
+            else if (evt is ExecutionCompletedEvent executionCompletedEvent)
+            {
+                returnedEvent = new ExecutionCompletedEvent(executionCompletedEvent.EventId, "[..snipped..]",
+                    executionCompletedEvent.OrchestrationStatus)
+                {
+                    Timestamp = executionCompletedEvent.Timestamp,
+                    IsPlayed = executionCompletedEvent.IsPlayed,
+                };
+            }
+            else if (evt is ExecutionTerminatedEvent executionTerminatedEvent)
+            {
+                returnedEvent = new ExecutionTerminatedEvent(executionTerminatedEvent.EventId, "[..snipped..]")
+                {
+                    Timestamp = executionTerminatedEvent.Timestamp,
+                    IsPlayed = executionTerminatedEvent.IsPlayed,
+                };
+            }
+            // ContinueAsNewEvent is covered by the ExecutionCompletedEvent block
+
+            return returnedEvent;
         }
     }
 }

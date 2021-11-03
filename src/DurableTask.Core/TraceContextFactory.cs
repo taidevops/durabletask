@@ -56,7 +56,7 @@ namespace DurableTask.Core
             switch (CorrelationSettings.Current.Protocol)
             {
                 case Protocol.W3CTraceContext:
-                    return new W3CTraceContextFactory();
+                    return new W3CTraceContextFactory();                
                 case Protocol.HttpCorrelationProtocol:
                     return new HttpCorrelationProtocolTraceContextFactory();
                 default:

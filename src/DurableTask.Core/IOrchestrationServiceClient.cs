@@ -63,9 +63,9 @@ namespace DurableTask.Core
         /// <param name="timeout">Maximum amount of time to wait</param>
         /// <param name="cancellationToken">Task cancellation token</param>
         Task<OrchestrationState> WaitForOrchestrationAsync(
-            string instanceId,
+            string instanceId, 
             string executionId,
-            TimeSpan timeout,
+            TimeSpan timeout, 
             CancellationToken cancellationToken);
 
         /// <summary>

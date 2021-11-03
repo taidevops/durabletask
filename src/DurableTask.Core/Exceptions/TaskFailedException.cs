@@ -48,5 +48,61 @@ namespace DurableTask.Core.Exceptions
             : base(reason, innerException)
         {
         }
+
+        /// <summary>
+        /// Initializes an new instance of the TaskFailedException class with a specified event id, schedule id, name, version and error message
+        ///    and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="eventId">EventId of the error.</param>
+        /// <param name="scheduleId">ScheduleId of the error.</param>
+        /// <param name="name">Name of the Type Instance that experienced the error.</param>
+        /// <param name="version">Version of the Type Instance that experienced the error.</param>
+        /// <param name="reason">The message that describes the error.</param>
+        /// <param name="cause">The exception that is the cause of the current exception, or a null reference if no cause is specified.</param>
+        public TaskFailedException(int eventId, int scheduleId, string name, string version, string reason,
+            Exception cause)
+            : base(eventId, reason, cause)
+        {
+            ScheduleId = scheduleId;
+            Name = name;
+            Version = version;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TaskFailedException class with serialized data.
+        /// </summary>
+        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        protected TaskFailedException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
+            ScheduleId = info.GetInt32(nameof(ScheduleId));
+            Name = info.GetString(nameof(Name));
+            Version = info.GetString(nameof(Version));
+        }
+
+        /// <inheritdoc />
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+            info.AddValue(nameof(ScheduleId), ScheduleId);
+            info.AddValue(nameof(Name), Name);
+            info.AddValue(nameof(Version), Version);
+        }
+
+        /// <summary>
+        /// Schedule Id of the exception
+        /// </summary>
+        public int ScheduleId { get; set; }
+
+        /// <summary>
+        /// Name of the Type Instance that experienced the error
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Version of the Type Instance that experienced the error
+        /// </summary>
+        public string Version { get; set; }
     }
 }

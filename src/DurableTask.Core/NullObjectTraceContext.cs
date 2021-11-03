@@ -33,12 +33,12 @@ namespace DurableTask.Core
         /// <inheritdoc />
         public override void SetParentAndStart(TraceContextBase parentTraceContext)
         {
-
+            
         }
         /// <inheritdoc />
         public override void StartAsNew()
         {
-
+            
         }
     }
 }

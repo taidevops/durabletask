@@ -68,8 +68,7 @@ namespace DurableTask.Core
                     TraceParentObject.Create(TraceParent).TraceId;
 
         /// <inheritdoc />
-        public override string TelemetryContextOperationParentId
-        {
+        public override string TelemetryContextOperationParentId {
             get
             {
                 if (CurrentActivity == null)
@@ -98,7 +97,7 @@ namespace DurableTask.Core
                 CurrentActivity.SetParentId(context.TraceParent);
                 CurrentActivity.TraceStateString = context.TraceState;
                 OrchestrationTraceContexts = context.OrchestrationTraceContexts.Clone();
-            }
+            } 
 
             CurrentActivity.Start();
 

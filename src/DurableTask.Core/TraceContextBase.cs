@@ -43,7 +43,7 @@ namespace DurableTask.Core
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
             };
         }
-
+       
         /// <summary>
         /// Start time of this telemetry
         /// </summary>
@@ -94,7 +94,7 @@ namespace DurableTask.Core
         /// Serializable Json string of TraceContext
         /// </summary>
         [JsonIgnore]
-        public string SerializableTraceContext =>
+        public string SerializableTraceContext => 
             JsonConvert.SerializeObject(this, CustomJsonSerializerSettings);
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace DurableTask.Core
         /// <returns></returns>
         public TraceContextBase GetCurrentOrchestrationRequestTraceContext()
         {
-            foreach (TraceContextBase element in OrchestrationTraceContexts)
+            foreach(TraceContextBase element in OrchestrationTraceContexts)
             {
                 if (TelemetryType.Request == element.TelemetryType) return element;
             }

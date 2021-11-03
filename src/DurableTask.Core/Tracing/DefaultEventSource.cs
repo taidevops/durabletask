@@ -129,7 +129,7 @@ namespace DurableTask.Core.Tracing
         /// Trace an event for the supplied parameters
         /// </summary>
         [NonEvent]
-        public void Trace(string source, string instanceId, string executionId, string sessionId, string message, string eventType) =>
+        public void Trace(string source, string instanceId, string executionId, string sessionId, string message, string eventType) => 
             Trace(source, instanceId, executionId, sessionId, message, string.Empty, eventType);
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace DurableTask.Core.Tracing
         /// Log debug event for the supplied parameters
         /// </summary>
         [NonEvent]
-        public void Debug(string source, string instanceId, string executionId, string sessionId, string message, string eventType) =>
+        public void Debug(string source, string instanceId, string executionId, string sessionId, string message, string eventType) => 
             Debug(source, instanceId, executionId, sessionId, message, string.Empty, eventType);
 
         /// <summary>
@@ -181,7 +181,7 @@ namespace DurableTask.Core.Tracing
         /// Log informational event for the supplied parameters
         /// </summary>
         [NonEvent]
-        public void Info(string source, string instanceId, string executionId, string sessionId, string message, string eventType) =>
+        public void Info(string source, string instanceId, string executionId, string sessionId, string message, string eventType) => 
             Info(source, instanceId, executionId, sessionId, message, string.Empty, eventType);
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace DurableTask.Core.Tracing
         /// Log warning event for the supplied parameters
         /// </summary>
         [NonEvent]
-        public void Warning(string source, string instanceId, string executionId, string sessionId, string message, string eventType) =>
+        public void Warning(string source, string instanceId, string executionId, string sessionId, string message, string eventType) => 
             Warning(source, instanceId, executionId, sessionId, message, string.Empty, eventType);
 
         /// <summary>
