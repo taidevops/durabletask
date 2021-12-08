@@ -29,44 +29,6 @@ namespace DurableTask.Core
         public string InstanceId { get; set; }
 
         /// <summary>
-        /// The execution id, unique to the execution of this instance
-        /// </summary>
-        [DataMember]
-        public string ExecutionId { get; set; }
-
-        internal OrchestrationInstance Clone()
-        {
-            return new OrchestrationInstance
-            {
-                ExecutionId = ExecutionId,
-                InstanceId = InstanceId
-            };
-        }
-
-        /// <summary>
-        /// Serves as a hash function for an OrchestrationInstance. 
-        /// </summary>
-        /// <returns>
-        /// A hash code for the current object.
-        /// </returns>
-        [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
-        public override int GetHashCode()
-        {
-            return (this.InstanceId ?? string.Empty).GetHashCode() ^ (this.ExecutionId ?? string.Empty).GetHashCode();
-        }
-
-        /// <summary>
-        /// Returns a string that represents the OrchestrationInstance.
-        /// </summary>
-        /// <returns>
-        /// A string that represents the current object.
-        /// </returns>
-        public override string ToString()
-        {
-            return $"[InstanceId: {this.InstanceId}, ExecutionId: {this.ExecutionId}]";
-        }
-
-        /// <summary>
         /// Implementation for <see cref="IExtensibleDataObject.ExtensionData"/>.
         /// </summary>
         public ExtensionDataObject ExtensionData { get; set; }

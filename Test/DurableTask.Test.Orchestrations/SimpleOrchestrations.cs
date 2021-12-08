@@ -11,21 +11,18 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core
+namespace DurableTask.Test.Orchestrations
 {
-    /// <summary>
-    /// Filter for Orchestration Name and Version
-    /// </summary>
-    public class OrchestrationStateNameVersionFilter : OrchestrationStateQueryFilter
-    {
-        /// <summary>
-        /// Gets or sets the orchestration Name for the filter
-        /// </summary>
-        public string Name { get; set; }
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.Serialization;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using DurableTask.Core;
 
-        /// <summary>
-        /// Gets or sets the orchestration Version for the filter
-        /// </summary>
-        public string Version { get; set; }
+    public class SimplestGreetingsOrchestration : TaskOrchestration<string, string>
+    {
+        // HACK: This is just a hack to communicate result of orchestration back to test
+        public static string Result;
     }
 }

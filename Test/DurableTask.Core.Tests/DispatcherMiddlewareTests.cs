@@ -18,16 +18,47 @@ namespace DurableTask.Core.Tests
     using System.Text;
     using System.Threading.Tasks;
     using DurableTask.Core.History;
+    using DurableTask.Emulator;
+    using DurableTask.Test.Orchestrations;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
 
     [TestClass]
     public class DispatcherMiddlewareTests
     {
-        //TaskHubWorker worker;
+        TaskHubWorker worker;
+        TaskHubClient client;
 
-        //public async Task Initialize()
-        //{
-        //    this.worker = new TaskHubWorker();
-        //}
+        [TestInitialize]
+        public async Task Initialize()
+        {
+            var service = new LocalOrchestrationService();
+            this.worker = new TaskHubWorker(service);
+
+            await this.worker
+                .AddTaskOrchestrations(typeof(SimplestGreetingsOrchestration))
+                .StartAsync();
+
+            this.client = new TaskHubClient(service);
+        }
+
+        [TestCleanup]
+        public async Task TestCleanup()
+        {
+            await this.worker.StopAsync(true);
+        }
+
+        [TestMethod]
+        public void DispatchMiddlewareContextBuiltInProperties()
+        {
+            TaskOrchestration orchestration = null;
+            this.worker.AddOrchestrationDispatcherMiddleware((context, next) =>
+            {
+                orchestration = context.GetProperty<TaskOrchestration>();
+
+                return next();
+            });
+
+            Assert.IsNotNull(orchestration);
+        }
     }
 }

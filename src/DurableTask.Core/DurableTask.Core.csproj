@@ -20,5 +20,14 @@
     <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="4.6.0" />
     <PackageReference Include="System.Reactive.Core" Version="4.4.1" />
     <PackageReference Include="System.Reactive.Compatibility" Version="4.4.1" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Folder Include="Command\" />
+    <Folder Include="Serializing\" />
+    <Folder Include="Settings\" />
+    <Folder Include="Stats\" />
+    <Folder Include="Tracing\" />
+    <Folder Include="Tracking\" />
   </ItemGroup>	
 </Project>

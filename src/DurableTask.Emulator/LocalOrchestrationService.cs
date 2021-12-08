@@ -14,8 +14,6 @@
 namespace DurableTask.Emulator
 {
     using DurableTask.Core;
-    using DurableTask.Core.Common;
-    using DurableTask.Core.Exceptions;
     using DurableTask.Core.History;
     using Newtonsoft.Json;
     using System;
@@ -29,70 +27,61 @@ namespace DurableTask.Emulator
     /// <summary>
     /// Fully functional in-proc orchestration service for testing
     /// </summary>
-    public class LocalOrchestrationService : IOrchestrationService
+    public class LocalOrchestrationService : IOrchestrationService, IOrchestrationServiceClient, IDisposable
     {
-        //readonly List<TaskMessage> timerMessages;
-
-        //readonly CancellationTokenSource cancellationTokenSource;
+        readonly CancellationTokenSource cancellationTokenSource;
 
         readonly object timerLock = new object();
 
-        //async Task TimerMessageSchedulerAsync()
-        //{
-        //    while (!this.cancellationTokenSource.Token.IsCancellationRequested)
-        //    {
-        //        lock (this.timerLock)
-        //        {
-        //            foreach (TaskMessage tm in this.timerMessages.ToList())
-        //            {
-        //                var te = tm.Event as TimerFiredEvent;
-
-        //                if (te == null)
-        //                {
-        //                    // TODO : unobserved task exception (AFFANDAR)
-        //                    throw new InvalidOperationException("Invalid timer message");
-        //                }
-
-        //                if (te.FireAt <= DateTime.UtcNow)
-        //                {
-        //                    this.orch
-        //                }
-        //            }    
-        //        }
-        //    }
-        //}
-
-        /******************************/
-        // management methods
-        /******************************/
-        /// <inheritdoc />
-        public Task CreateAsync()
+        /// <summary>
+        ///     Creates a new instance of the LocalOrchestrationService with default settings
+        /// </summary>
+        public LocalOrchestrationService()
         {
-            return CreateAsync(true);
+            this.cancellationTokenSource = new CancellationTokenSource();
         }
 
-        /// <inheritdoc />
-        public Task CreateAsync(bool recreateInstanceStore)
+        async Task TimerMessageSchedulerAsync()
         {
-            return Task.FromResult<object>(null);
+            while (!this.cancellationTokenSource.Token.IsCancellationRequested)
+            {
+                lock (this.timerLock)
+                {
+
+                }
+
+                await Task.Delay(TimeSpan.FromSeconds(1));
+            }
         }
 
         /// <inheritdoc />
         public Task StartAsync()
         {
-            throw new NotImplementedException();
+            Task.Run(() => TimerMessageSchedulerAsync());
+            return Task.FromResult<object>(null);
         }
 
         /// <inheritdoc />
         public Task StopAsync()
         {
-            throw new NotImplementedException();
+            this.cancellationTokenSource.Cancel();
+            return Task.FromResult<object>(null);
         }
 
         /// <inheritdoc />
-        public Task StopAsync(bool isForced)
+        public void Dispose()
         {
-            throw new NotImplementedException();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.cancellationTokenSource.Cancel();
+                this.cancellationTokenSource.Dispose();
+            }
         }
     }
 }

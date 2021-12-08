@@ -23,17 +23,6 @@ namespace DurableTask.Core.Middleware
         readonly IList<Func<DispatchMiddlewareDelegate, DispatchMiddlewareDelegate>> components =
             new List<Func<DispatchMiddlewareDelegate, DispatchMiddlewareDelegate>>();
 
-        public Task RunAsync(DispatchMiddlewareContext context, DispatchMiddlewareDelegate handler)
-        {
-            // Build the delegate chain
-            foreach (Func<DispatchMiddlewareDelegate, DispatchMiddlewareDelegate> component in this.components.Reverse())
-            {
-                handler = component(handler);
-            }
-
-            return handler(context);
-        }
-
         public void Add(Func<DispatchMiddlewareContext, Func<Task>, Task> middleware)
         {
             this.components.Add(next =>

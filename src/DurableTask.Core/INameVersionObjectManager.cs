@@ -23,13 +23,5 @@ namespace DurableTask.Core
         /// </summary>
         /// <param name="creator">Class for creation of a new name and version instance</param>
         void Add(ObjectCreator<T> creator);
-
-        /// <summary>
-        /// Gets a creator class instance based on a name and version
-        /// </summary>
-        /// <param name="name">Name of the class to return the creator for</param>
-        /// <param name="version">Version of the class to return the creator for</param>
-        /// <returns>Class instance based on the matching creator class for the supplied name and version</returns>
-        T GetObject(string name, string version);
     }
 }

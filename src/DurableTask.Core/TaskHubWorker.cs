@@ -18,7 +18,6 @@ namespace DurableTask.Core
     using System.Reflection;
     using System.Threading;
     using System.Threading.Tasks;
-    using DurableTask.Core.Logging;
     using DurableTask.Core.Middleware;
     using Microsoft.Extensions.Logging;
 
@@ -28,14 +27,11 @@ namespace DurableTask.Core
     /// </summary>
     public sealed class TaskHubWorker : IDisposable
     {
-        readonly INameVersionObjectManager<TaskActivity> activityManager;
         readonly INameVersionObjectManager<TaskOrchestration> orchestrationManager;
 
         readonly DispatchMiddlewarePipeline orchestrationDispatchPipeline = new DispatchMiddlewarePipeline();
-        readonly DispatchMiddlewarePipeline activityDispatchPipeline = new DispatchMiddlewarePipeline();
 
         readonly SemaphoreSlim slimLock = new SemaphoreSlim(1, 1);
-        readonly LogHelper logHelper;
 
         /// <summary>
         /// Reference to the orchestration service used by the task hub worker
@@ -45,7 +41,6 @@ namespace DurableTask.Core
 
         volatile bool isStarted;
 
-        TaskActivityDispatcher activityDispatcher;
         TaskOrchestrationDispatcher orchestrationDispatcher;
 
         /// <summary>
@@ -55,62 +50,21 @@ namespace DurableTask.Core
         public TaskHubWorker(IOrchestrationService orchestrationService)
             : this(
                   orchestrationService,
-                  new NameVersionObjectManager<TaskOrchestration>(),
-                  new NameVersionObjectManager<TaskActivity>())
+                  new NameVersionObjectManager<TaskOrchestration>())
         {
         }
-
-
-        /// <summary>
-        ///     Create a new TaskHubWorker with given OrchestrationService
-        /// </summary>
-        /// <param name="orchestrationService">Reference the orchestration service implementation</param>
-        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/> to use for logging</param>
-        public TaskHubWorker(IOrchestrationService orchestrationService, ILoggerFactory loggerFactory = null)
-            : this(
-                  orchestrationService,
-                  new NameVersionObjectManager<TaskOrchestration>(),
-                  new NameVersionObjectManager<TaskActivity>(),
-                  loggerFactory)
-        {
-        }
-
-        /// <summary>
-        ///     Create a new TaskHubWorker with given OrchestrationService and name version managers
-        /// </summary>
-        /// <param name="orchestrationService">Reference the orchestration service implementation</param>
-        /// <param name="orchestrationObjectManager">NameVersionObjectManager for Orchestrations</param>
-        /// <param name="activityObjectManager">NameVersionObjectManager for Activities</param>
-        public TaskHubWorker(
-            IOrchestrationService orchestrationService,
-            INameVersionObjectManager<TaskOrchestration> orchestrationObjectManager,
-            INameVersionObjectManager<TaskActivity> activityObjectManager)
-            : this(
-                orchestrationService,
-                orchestrationObjectManager,
-                activityObjectManager,
-                loggerFactory: null)
-        {
-        }
-
 
         /// <summary>
         ///     Create a new <see cref="TaskHubWorker"/> with given <see cref="IOrchestrationService"/> and name version managers
         /// </summary>
         /// <param name="orchestrationService">The orchestration service implementation</param>
         /// <param name="orchestrationObjectManager">The <see cref="INameVersionObjectManager{TaskOrchestration}"/> for orchestrations</param>
-        /// <param name="activityObjectManager">The <see cref="INameVersionObjectManager{TaskActivity}"/> for activities</param>
-        /// <param name="loggerFactory">The <see cref="ILoggerFactory"/> to use for logging</param>
         public TaskHubWorker(
             IOrchestrationService orchestrationService,
-            INameVersionObjectManager<TaskOrchestration> orchestrationObjectManager,
-            INameVersionObjectManager<TaskActivity> activityObjectManager,
-            ILoggerFactory loggerFactory = null)
+            INameVersionObjectManager<TaskOrchestration> orchestrationObjectManager)
         {
             this.orchestrationManager = orchestrationObjectManager ?? throw new ArgumentException("orchestrationObjectManager");
-            this.activityManager = activityObjectManager ?? throw new ArgumentException("activityObjectManager");
             this.orchestrationService = orchestrationService ?? throw new ArgumentException("orchestrationService");
-            this.logHelper = new LogHelper(loggerFactory?.CreateLogger("DurableTask.Core"));
         }
 
         /// <summary>
@@ -119,26 +73,12 @@ namespace DurableTask.Core
         public TaskOrchestrationDispatcher TaskOrchestrationDispatcher => this.orchestrationDispatcher;
 
         /// <summary>
-        /// Gets the task activity dispatcher
-        /// </summary>
-        public TaskActivityDispatcher TaskActivityDispatcher => this.activityDispatcher;
-
-        /// <summary>
         /// Adds a middleware delegate to the orchestration dispatch pipeline.
         /// </summary>
         /// <param name="middleware">Delegate to invoke whenever a message is dispatched to an orchestration.</param>
         public void AddOrchestrationDispatcherMiddleware(Func<DispatchMiddlewareContext, Func<Task>, Task> middleware)
         {
             this.orchestrationDispatchPipeline.Add(middleware ?? throw new ArgumentNullException(nameof(middleware)));
-        }
-
-        /// <summary>
-        /// Adds a middleware delegate to the activity dispatch pipeline.
-        /// </summary>
-        /// <param name="middleware">Delegate to invoke whenever a message is dispatched to an activity.</param>
-        public void AddActivityDispatcherMiddleware(Func<DispatchMiddlewareContext, Func<Task>, Task> middleware)
-        {
-            this.activityDispatchPipeline.Add(middleware ?? throw new ArgumentNullException(nameof(middleware)));
         }
 
         /// <summary>
@@ -155,25 +95,14 @@ namespace DurableTask.Core
                     throw new InvalidOperationException("Worker is already started");
                 }
 
-                this.logHelper.TaskHubWorkerStarting();
-                var sw = Stopwatch.StartNew();
-
                 this.orchestrationDispatcher = new TaskOrchestrationDispatcher(
                     this.orchestrationService,
                     this.orchestrationManager,
-                    this.orchestrationDispatchPipeline,
-                    this.logHelper);
-                this.activityDispatcher = new TaskActivityDispatcher(
-                    this.orchestrationService,
-                    this.activityManager,
-                    this.activityDispatchPipeline,
-                    this.logHelper);
+                    this.orchestrationDispatchPipeline);
 
                 await this.orchestrationService.StartAsync();
                 await this.orchestrationDispatcher.StartAsync();
-                await this.activityDispatcher.StartAsync();
 
-                this.logHelper.TaskHubWorkerStarted(sw.Elapsed);
                 this.isStarted = true;
             }
             finally
@@ -182,14 +111,6 @@ namespace DurableTask.Core
             }
 
             return this;
-        }
-
-        /// <summary>
-        ///     Gracefully stops the TaskHubWorker
-        /// </summary>
-        public async Task StopAsync()
-        {
-            await this.StopAsync(false);
         }
 
         /// <summary>
@@ -203,22 +124,11 @@ namespace DurableTask.Core
             {
                 if (this.isStarted)
                 {
-                    this.logHelper.TaskHubWorkerStopping(isForced);
-                    var sw = Stopwatch.StartNew();
+                    await this.orchestrationService.StopAsync();
 
-                    var dispatcherShutdowns = new Task[]
-                    {
-                        this.orchestrationDispatcher.StopAsync(isForced),
-                        this.activityDispatcher.StopAsync(isForced),
-                    };
-
-                    await Task.WhenAll(dispatcherShutdowns);
-
-                    await this.orchestrationService.StopAsync(isForced);
-
-                    this.logHelper.TaskHubWorkerStopped(sw.Elapsed);
                     this.isStarted = false;
                 }
+                
             }
             finally
             {
@@ -237,116 +147,6 @@ namespace DurableTask.Core
             {
                 ObjectCreator<TaskOrchestration> creator = new DefaultObjectCreator<TaskOrchestration>(type);
                 this.orchestrationManager.Add(creator);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Loads user defined TaskOrchestration classes in the TaskHubWorker
-        /// </summary>
-        /// <param name="taskOrchestrationCreators">
-        ///     User specified ObjectCreators that will
-        ///     create classes deriving TaskOrchestrations with specific names and versions
-        /// </param>
-        public TaskHubWorker AddTaskOrchestrations(params ObjectCreator<TaskOrchestration>[] taskOrchestrationCreators)
-        {
-            foreach (ObjectCreator<TaskOrchestration> creator in taskOrchestrationCreators)
-            {
-                this.orchestrationManager.Add(creator);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Loads user defined TaskActivity objects in the TaskHubWorker
-        /// </summary>
-        /// <param name="taskActivityObjects">Objects of with TaskActivity base type</param>
-        public TaskHubWorker AddTaskActivities(params TaskActivity[] taskActivityObjects)
-        {
-            foreach (TaskActivity instance in taskActivityObjects)
-            {
-                ObjectCreator<TaskActivity> creator = new DefaultObjectCreator<TaskActivity>(instance);
-                this.activityManager.Add(creator);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Loads user defined TaskActivity classes in the TaskHubWorker
-        /// </summary>
-        /// <param name="taskActivityTypes">Types deriving from TaskOrchestration class</param>
-        public TaskHubWorker AddTaskActivities(params Type[] taskActivityTypes)
-        {
-            foreach (Type type in taskActivityTypes)
-            {
-                ObjectCreator<TaskActivity> creator = new DefaultObjectCreator<TaskActivity>(type);
-                this.activityManager.Add(creator);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Loads user defined TaskActivity classes in the TaskHubWorker
-        /// </summary>
-        /// <param name="taskActivityCreators">
-        ///     User specified ObjectCreators that will
-        ///     create classes deriving TaskActivity with specific names and versions
-        /// </param>
-        public TaskHubWorker AddTaskActivities(params ObjectCreator<TaskActivity>[] taskActivityCreators)
-        {
-            foreach (ObjectCreator<TaskActivity> creator in taskActivityCreators)
-            {
-                this.activityManager.Add(creator);
-            }
-
-            return this;
-        }
-
-        /// <summary>
-        ///     Infers and adds every method in the specified interface T on the
-        ///     passed in object as a different TaskActivity with Name set to the method name
-        ///     and version set to an empty string. Methods can then be invoked from task orchestrations
-        ///     by calling ScheduleTask(name, version) with name as the method name and string.Empty as the version.
-        /// </summary>
-        /// <typeparam name="T">Interface</typeparam>
-        /// <param name="activities">Object that implements this interface</param>
-        public TaskHubWorker AddTaskActivitiesFromInterface<T>(T activities)
-        {
-            return this.AddTaskActivitiesFromInterface(activities, false);
-        }
-
-        /// <summary>
-        ///     Infers and adds every method in the specified interface T on the
-        ///     passed in object as a different TaskActivity with Name set to the method name
-        ///     and version set to an empty string. Methods can then be invoked from task orchestrations
-        ///     by calling ScheduleTask(name, version) with name as the method name and string.Empty as the version.
-        /// </summary>
-        /// <typeparam name="T">Interface</typeparam>
-        /// <param name="activities">Object that implements this interface</param>
-        /// <param name="useFullyQualifiedMethodNames">
-        ///     If true, the method name translation from the interface contains
-        ///     the interface name, if false then only the method name is used
-        /// </param>
-        public TaskHubWorker AddTaskActivitiesFromInterface<T>(T activities, bool useFullyQualifiedMethodNames)
-        {
-            Type @interface = typeof(T);
-            if (!@interface.IsInterface)
-            {
-                throw new Exception("Contract can only be an interface.");
-            }
-
-            foreach (MethodInfo methodInfo in @interface.GetMethods())
-            {
-                TaskActivity taskActivity = new ReflectionBasedTaskActivity(activities, methodInfo);
-                ObjectCreator<TaskActivity> creator =
-                    new NameValueObjectCreator<TaskActivity>(
-                        NameVersionHelper.GetDefaultName(methodInfo, useFullyQualifiedMethodNames),
-                        NameVersionHelper.GetDefaultVersion(methodInfo), taskActivity);
-                this.activityManager.Add(creator);
             }
 
             return this;
