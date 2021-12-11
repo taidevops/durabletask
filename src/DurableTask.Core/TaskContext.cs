@@ -14,22 +14,22 @@
 namespace DurableTask.Core
 {
     /// <summary>
-    /// Interface for name and version manager class to be used in type lookup mappings
+    /// Task context
     /// </summary>
-    public interface INameVersionObjectManager<T>
+    public class TaskContext
     {
         /// <summary>
-        /// Adds a new ObjectCreator to the name version Object manager
+        /// Creates a new TaskContext with the supplied OrchestrationInstance
         /// </summary>
-        /// <param name="creator">Class for creation of a new name and version instance</param>
-        void Add(ObjectCreator<T> creator);
+        /// <param name="orchestrationInstance"></param>
+        public TaskContext(OrchestrationInstance orchestrationInstance)
+        {
+            OrchestrationInstance = orchestrationInstance;
+        }
 
         /// <summary>
-        /// Gets a creator class instance based on a name and version
+        /// Gets the OrchestrationInstance for this task context
         /// </summary>
-        /// <param name="name">Name of the class to return the creator for</param>
-        /// <param name="version">Version of the class to return the creator for</param>
-        /// <returns>Class instance based on the matching creator class for the supplied name and version</returns>
-        T GetObject(string name, string version);
+        public OrchestrationInstance OrchestrationInstance { get; private set; }
     }
 }

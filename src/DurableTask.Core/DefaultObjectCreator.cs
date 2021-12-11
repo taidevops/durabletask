@@ -31,6 +31,7 @@ namespace DurableTask.Core
         public DefaultObjectCreator(Type type)
         {
             this.prototype = type;
+            Initialize(type);
         }
 
         /// <summary>
@@ -40,6 +41,7 @@ namespace DurableTask.Core
         public DefaultObjectCreator(T instance)
         {
             this.instance = instance;
+            Initialize(instance);
         }
 
         /// <summary>
@@ -54,6 +56,12 @@ namespace DurableTask.Core
             }
 
             return this.instance;
+        }
+
+        void Initialize(object obj)
+        {
+            Name = NameVersionHelper.GetDefaultName(obj);
+            Version = NameVersionHelper.GetDefaultVersion(obj);
         }
     }
 }

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <SignAssembly>true</SignAssembly>
+    <LangVersion>9.0</LangVersion>
+  </PropertyGroup>
+	
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.EventSource" Version="6.0.*" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.*" />
+    <PackageReference Include="Moq" Version="4.16.*" />
+    <PackageReference Include="xunit" Version="2.4.*" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.*" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TaiDev.DurableTask.SqlServer\TaiDev.DurableTask.SqlServer.csproj" />
+  </ItemGroup>	
+
+</Project>

@@ -19,6 +19,7 @@ namespace DurableTask.Core
     internal class NameVersionObjectManager<T> : INameVersionObjectManager<T>
     {
         readonly IDictionary<string, ObjectCreator<T>> creators;
+        readonly object thisLock = new object();
 
         public NameVersionObjectManager()
         {
@@ -27,15 +28,33 @@ namespace DurableTask.Core
 
         public void Add(ObjectCreator<T> creator)
         {
-            string key = GetKey(creator.Name, creator.Version);
-
-            if (this.creators.ContainsKey(key))
+            lock (this.thisLock)
             {
-                throw new InvalidOperationException("Duplicate entry detected: " + creator.Name + " " +
-                                                    creator.Version);
-            }
+                string key = GetKey(creator.Name, creator.Version);
 
-            this.creators.Add(key, creator);
+                if (this.creators.ContainsKey(key))
+                {
+                    throw new InvalidOperationException("Duplicate entry detected: " + creator.Name + " " +
+                                                        creator.Version);
+                }
+
+                this.creators.Add(key, creator);
+            }
+        }
+
+        public T GetObject(string name, string version)
+        {
+            string key = GetKey(name, version);
+
+            lock (this.thisLock)
+            {
+                if (this.creators.TryGetValue(key, out ObjectCreator<T> creator))
+                {
+                    return creator.Create();
+                }
+
+                return default(T);
+            }
         }
 
         string GetKey(string name, string version)

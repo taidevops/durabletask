@@ -23,7 +23,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DurableTask.Core.Tests", "T
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DurableTask.Emulator", "src\DurableTask.Emulator\DurableTask.Emulator.csproj", "{855936D3-7739-4C53-B50F-2AE2A17861C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DurableTask.Test.Orchestrations", "Test\DurableTask.Test.Orchestrations\DurableTask.Test.Orchestrations.csproj", "{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DurableTask.Test.Orchestrations", "Test\DurableTask.Test.Orchestrations\DurableTask.Test.Orchestrations.csproj", "{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaiDev.DurableTask.SqlServer", "src\TaiDev.DurableTask.SqlServer\TaiDev.DurableTask.SqlServer.csproj", "{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaiDev.DurableTask.SqlServer.Tests", "Test\TaiDev.DurableTask.SqlServer.Tests\TaiDev.DurableTask.SqlServer.Tests.csproj", "{EEA1A4A5-7F37-4DE0-9742-0A197A25E056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +51,14 @@ Global
 		{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEA1A4A5-7F37-4DE0-9742-0A197A25E056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEA1A4A5-7F37-4DE0-9742-0A197A25E056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEA1A4A5-7F37-4DE0-9742-0A197A25E056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEA1A4A5-7F37-4DE0-9742-0A197A25E056}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -56,6 +68,8 @@ Global
 		{A0E3CA45-9F3B-41D1-960D-9C9863EC7F2E} = {399E72FA-FBB2-40EE-BDCF-09D30FC0393B}
 		{855936D3-7739-4C53-B50F-2AE2A17861C2} = {2F436AFC-A92A-40DA-979D-D914D8304916}
 		{F553D03D-BC6F-4FA8-81C3-0455FE5DAA8E} = {399E72FA-FBB2-40EE-BDCF-09D30FC0393B}
+		{3E17ACDD-BF9E-4FEC-8B9F-CB6CB1BEDAC3} = {2F436AFC-A92A-40DA-979D-D914D8304916}
+		{EEA1A4A5-7F37-4DE0-9742-0A197A25E056} = {399E72FA-FBB2-40EE-BDCF-09D30FC0393B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {92DEB9CA-6153-4017-8C1A-525F6E8C95F1}

@@ -23,6 +23,7 @@ namespace DurableTask.Core.Common
     using System.Threading.Tasks;
     using DurableTask.Core.Exceptions;
     using DurableTask.Core.History;
+    using DurableTask.Core.Serializing;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
@@ -47,5 +48,65 @@ namespace DurableTask.Core.Common
             Environment.GetEnvironmentVariable("WEBSITE_SITE_NAME") ??
             Environment.GetEnvironmentVariable("DTFX_APP_NAME") ??
             string.Empty;
+
+        internal static JArray ConvertToJArray(string input)
+        {
+            JArray jArray;
+            using (var stringReader = new StringReader(input))
+            using (var jsonTextReader = new JsonTextReader(stringReader) { DateParseHandling = DateParseHandling.None })
+            {
+                jArray = JArray.Load(jsonTextReader);
+            }
+
+            return jArray;
+        }
+
+        /// <summary>
+        /// Returns true or false whether an exception is considered fatal
+        /// </summary>
+        public static bool IsFatal(Exception exception)
+        {
+            if (exception is OutOfMemoryException || exception is StackOverflowException)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Returns true if an exception represents an aborting execution; false otherwise.
+        /// </summary>
+        public static bool IsExecutionAborting(Exception exception) => exception is SessionAbortedException;
+
+        /// <summary>
+        /// Serializes the supplied exception to a string
+        /// </summary>
+        public static string SerializeCause(Exception originalException, DataConverter converter)
+        {
+            if (originalException == null)
+            {
+                throw new ArgumentNullException(nameof(originalException));
+            }
+
+            if (converter == null)
+            {
+                throw new ArgumentNullException(nameof(converter));
+            }
+
+            string details;
+            try
+            {
+                details = converter.Serialize(originalException);
+            }
+            catch
+            {
+                // Cannot serialize exception, throw original exception
+                ExceptionDispatchInfo.Capture(originalException).Throw();
+                throw originalException; // no op
+            }
+
+            return details;
+        }
     }
 }

@@ -15,34 +15,39 @@ namespace DurableTask.Core
 {
     using System;
     using System.Collections.Generic;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    // TODO : MASTER (AFFANDAR)
-    //      + implement batched message receive
-    //      + proper exception model for orchestration service providers
+    using System.Text;
 
     /// <summary>
-    /// Orchestration Service interface for performing task hub management operations 
-    /// and handling orchestrations and work items' state
+    /// A class that includes an exception and correlation information for sending telemetry
     /// </summary>
-    public interface IOrchestrationService
+    public class CorrelatedExceptionDetails
     {
-        // Service management and lifecycle operations
+        /// <summary>
+        /// Exception that is sent to E2E tracing system
+        /// </summary>
+        public Exception Exception { get; set; }
 
         /// <summary>
-        /// Starts the service initializing the required resources
+        /// OperationId is unique id of end to end tracing
         /// </summary>
-        Task StartAsync();
+        public string OperationId { get; set; }
 
         /// <summary>
-        /// Stops the orchestration service gracefully
+        /// ParentId is an id of an end to end tracing
         /// </summary>
-        Task StopAsync();
+        public string ParentId { get; set; }
 
         /// <summary>
-        /// Stops the orchestration service with optional forced flag
+        /// A constructor with mandatory parameters.
         /// </summary>
-        Task StopAsync(bool isForced);
+        /// <param name="exception">Exception</param> 
+        /// <param name="operationId">OperationId</param>
+        /// <param name="parentId">ParentId</param>
+        public CorrelatedExceptionDetails(Exception exception, string operationId, string parentId)
+        {
+            this.Exception = exception;
+            this.ParentId = parentId;
+            this.OperationId = operationId;
+        }
     }
 }
