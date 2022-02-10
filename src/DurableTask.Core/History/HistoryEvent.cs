@@ -52,7 +52,6 @@ namespace DurableTask.Core.History
         /// </summary>
         internal HistoryEvent()
         {
-            IsPlayed = false;
             Timestamp = DateTime.UtcNow;
         }
 
@@ -63,7 +62,6 @@ namespace DurableTask.Core.History
         protected HistoryEvent(int eventId)
         {
             EventId = eventId;
-            IsPlayed = false;
             Timestamp = DateTime.UtcNow;
         }
 
@@ -95,6 +93,5 @@ namespace DurableTask.Core.History
         /// Implementation for <see cref="IExtensibleDataObject.ExtensionData"/>.
         /// </summary>
         public ExtensionDataObject? ExtensionData { get; set; }
-
     }
 }

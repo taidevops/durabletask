@@ -27,5 +27,13 @@ namespace DurableTask.Core.History
         /// Gets the event type
         /// </summary>
         public override EventType EventType => EventType.ExecutionStarted;
+
+        [DataMember]
+        public string Name { get; set; }
+
+        [DataMember]
+        public string Version { get; set; }
+
+        
     }
 }
