@@ -22,5 +22,15 @@ namespace DurableTask.Core.History
         /// Orchestration execution has started event
         /// </summary>
         ExecutionStarted,
+
+        ExecutionCompleted,
+
+        ExecutionFailed,
+
+        ExecutionTerminated,
+
+        TaskScheduled,
+        
+                
     }
 }
