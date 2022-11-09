@@ -11,27 +11,31 @@
 //  limitations under the License.
 //  ----------------------------------------------------------------------------------
 
-namespace DurableTask.Core
+namespace DurableTask.Core.Common
 {
     /// <summary>
-    /// Task context
+    /// Compression style
     /// </summary>
-    public class TaskContext
+    public enum CompressionStyle
     {
         /// <summary>
-        /// Creates a new TaskContext with the supplied OrchestrationInstance
+        ///     Revert to pre-message compression behavior (not recommended)
         /// </summary>
-        /// <param name="orchestrationInstance"></param>
-        public TaskContext(OrchestrationInstance orchestrationInstance)
-        {
-            OrchestrationInstance = orchestrationInstance;
-        }
+        Legacy = 0,
 
         /// <summary>
-        /// Gets the OrchestrationInstance for this task context
+        ///     Never compress messages
         /// </summary>
-        public OrchestrationInstance OrchestrationInstance { get; private set; }
+        Never,
 
-        internal 
+        /// <summary>
+        ///     Always compress messages
+        /// </summary>
+        Always,
+
+        /// <summary>
+        ///     Only compress messages if they are above the threshold
+        /// </summary>
+        Threshold,
     }
 }

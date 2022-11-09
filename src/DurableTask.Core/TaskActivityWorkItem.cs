@@ -13,25 +13,32 @@
 
 namespace DurableTask.Core
 {
+    using System;
+    using System.Diagnostics;
+
     /// <summary>
-    /// Task context
+    /// An active instance / work item of a task activity
     /// </summary>
-    public class TaskContext
+    public class TaskActivityWorkItem
     {
         /// <summary>
-        /// Creates a new TaskContext with the supplied OrchestrationInstance
+        /// The Id of the work work item, likely related to the task message
         /// </summary>
-        /// <param name="orchestrationInstance"></param>
-        public TaskContext(OrchestrationInstance orchestrationInstance)
-        {
-            OrchestrationInstance = orchestrationInstance;
-        }
+        public string Id;
 
         /// <summary>
-        /// Gets the OrchestrationInstance for this task context
+        /// The datetime this work item is locked until
         /// </summary>
-        public OrchestrationInstance OrchestrationInstance { get; private set; }
+        public DateTime LockedUntilUtc;
 
-        internal 
+        /// <summary>
+        /// The task message associated with this work item
+        /// </summary>
+        public TaskMessage TaskMessage;
+
+        /// <summary>
+        /// The TraceContext which is included on the queue.
+        /// </summary>
+        public TraceContextBase TraceContextBase;
     }
 }

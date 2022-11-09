@@ -14,24 +14,18 @@
 namespace DurableTask.Core
 {
     /// <summary>
-    /// Task context
+    /// Interface for name and version class to be used in lookup mappings
     /// </summary>
-    public class TaskContext
+    public interface INameVersionInfo
     {
         /// <summary>
-        /// Creates a new TaskContext with the supplied OrchestrationInstance
+        /// The name of the method
         /// </summary>
-        /// <param name="orchestrationInstance"></param>
-        public TaskContext(OrchestrationInstance orchestrationInstance)
-        {
-            OrchestrationInstance = orchestrationInstance;
-        }
+        string Name { get; }
 
         /// <summary>
-        /// Gets the OrchestrationInstance for this task context
+        /// The version of the method
         /// </summary>
-        public OrchestrationInstance OrchestrationInstance { get; private set; }
-
-        internal 
+        string Version { get; }
     }
 }

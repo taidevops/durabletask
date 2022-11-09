@@ -14,24 +14,18 @@
 namespace DurableTask.Core
 {
     /// <summary>
-    /// Task context
+    /// Specifies Behavior to be followed when dealing with unprocessed EventRaisedEvents when an orchestration continues as new
     /// </summary>
-    public class TaskContext
+    public enum BehaviorOnContinueAsNew
     {
         /// <summary>
-        /// Creates a new TaskContext with the supplied OrchestrationInstance
+        /// All pending EventRaisedEvents will be ignored
         /// </summary>
-        /// <param name="orchestrationInstance"></param>
-        public TaskContext(OrchestrationInstance orchestrationInstance)
-        {
-            OrchestrationInstance = orchestrationInstance;
-        }
+        Ignore,
 
         /// <summary>
-        /// Gets the OrchestrationInstance for this task context
+        /// 
         /// </summary>
-        public OrchestrationInstance OrchestrationInstance { get; private set; }
-
-        internal 
+        Carryover,
     }
 }
